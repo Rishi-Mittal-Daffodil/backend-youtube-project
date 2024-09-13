@@ -6,17 +6,10 @@ import cookieParser from "cookie-parser";
 const app = express();
 dotenv.config();
 
-
-app.use(express.json({limit: "16kb"})); 
-app.use(urlencoded({extended:true , limit:"16kb"}));
-app.use(express.static("public")) ; 
-app.use(cookieParser()) ; 
-
-
-
-
-
-
+app.use(express.json({ limit: "16kb" }));
+app.use(urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.static("public"));
+app.use(cookieParser());
 
 const PORT = 8000;
 DB_CONNECT()
