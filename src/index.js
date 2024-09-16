@@ -1,5 +1,4 @@
 import express, { urlencoded } from "express";
-import mongoose from "mongoose";
 import dotenv from "dotenv";
 import DB_CONNECT from "./DB/index.js";
 import cookieParser from "cookie-parser";
