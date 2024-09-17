@@ -7,9 +7,11 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 //genrating access and refresh token .
 const generateAccessTokenAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
-  const accessToken = await user.generateAccessToken();
-  const refreshToken = await user.generateRefreshToken();
-  if (!accessToken || !refreshToken)
+  console.log("token",user);
+  
+  const accessToken =user.generateAccessToken();
+  const refreshToken =user.generateRefreshToken();
+  if (!(accessToken || refreshToken))
     throw new ApiError(
       "something went wrong while generating  access and refresh token "
     );
@@ -72,8 +74,9 @@ const loginUser = asyncHandler(async (req, res) => {
   if (!(username || email))
     throw new ApiError(400, "Please Provide username or password");
 
-  const user = User.findOne({ $or: [{ username }, { email }] });
-
+  const user = await  User.findOne({ $or: [{ username }, { email }] });
+  console.log(user);
+  
   if (!user) throw new ApiError(404, "user not Exist");
 
   const isPassword = await user.isPasswordCorrect(password);
