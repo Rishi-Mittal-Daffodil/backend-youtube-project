@@ -1,8 +1,8 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { ApiResponse } from "../utils/ApiResponse.js";
 
 //genrating access and refresh token .
 const generateAccessTokenAndRefreshToken = async (userId) => {
@@ -42,7 +42,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (!avatarLocalPath) throw new ApiError(400, "Please Provide a  Avatar");
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  console.log(avatar);
+  // console.log(avatar);
 
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
@@ -126,4 +126,4 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "user logged out successfuly"));
 });
 
-export { registerUser, loginUser, logoutUser };
+export { registerUser, loginUser, logoutUser };    

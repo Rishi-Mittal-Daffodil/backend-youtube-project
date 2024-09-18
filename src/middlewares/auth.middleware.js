@@ -6,8 +6,7 @@ import { User } from "../models/user.model.js";
 const verifyToken = asyncHandler(async (req, res, next) => {
   try {
     const token =
-      req.cookie?.accessToken ||
-      req.header("Authorization")?.replace("Bearer ", "");
+      req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
     console.log(token);
 
     if (!token) throw new ApiError(401, "unauthorized request");
