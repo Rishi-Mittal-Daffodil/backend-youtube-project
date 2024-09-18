@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import jwt from "jsonwebtoken";
 
 //genrating access and refresh token .
 const generateAccessTokenAndRefreshToken = async (userId) => {
@@ -11,6 +12,7 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
   
   const accessToken =user.generateAccessToken();
   const refreshToken =user.generateRefreshToken();
+  user.refreshToken =  refreshToken ; 
   if (!(accessToken || refreshToken))
     throw new ApiError(
       "something went wrong while generating  access and refresh token "
@@ -125,5 +127,38 @@ const logoutUser = asyncHandler(async (req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "user logged out successfuly"));
 });
+
+
+const refreshAccessToken = asyncHandler(async (req , res)=>{
+  try {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body?.refreshToken ; 
+    if(!incomingRefreshToken){
+      throw new ApiError(401 , "unAuthorized acess") ; 
+    }
+    const decodeToken = jwt.verify(incomingRefreshToken , process.env.REFRESH_TOKEN_SECRET);
+    const user =  await  User.findById(decodeToken?._id) ; 
+    if(!user)  throw new ApiError(401 , "Invalid refresh token");
+
+    if(incomingRefreshToken !==  user?.refreshToken){
+      throw new ApiError(401 , "refresh token is used or expired ") ;
+    }
+
+    const options = {
+      httpOnly : true ,  
+      secure :  true 
+    }
+
+    const {accessToken , newRefreshToken} = generateAccessTokenAndRefreshToken(user._id) ; 
+    res
+    .status(200)
+    .cookie("accessToken" , accessToken , options) 
+    .cookie("refreshToken" , newRefreshToken , options)
+    .json(new ApiResponse(200 , {accessToken  , refreshToken :  newRefreshToken} , "token refreshed")) ; 
+
+  } catch (error) {
+    throw new ApiError(401 , error?.message , "invalid User access")
+  }
+
+})
 
 export { registerUser, loginUser, logoutUser };    

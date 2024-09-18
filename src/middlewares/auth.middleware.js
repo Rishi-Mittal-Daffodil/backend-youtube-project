@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 
-const verifyToken = asyncHandler(async (req, res, next) => {
+const verifyToken = asyncHandler(async (req, _ , next) => {
   try {
     const token =
       req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
