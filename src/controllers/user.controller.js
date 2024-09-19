@@ -8,11 +8,12 @@ import jwt from "jsonwebtoken";
 //genrating access and refresh token .
 const generateAccessTokenAndRefreshToken = async (userId) => {
   const user = await User.findById(userId);
-  console.log("token", user);
+  // console.log("token", user);
 
   const accessToken = user.generateAccessToken();
   const refreshToken = user.generateRefreshToken();
   user.refreshToken = refreshToken;
+  await user.save({validateBeforeSave:false});
   if (!(accessToken || refreshToken))
     throw new ApiError(
       "something went wrong while generating  access and refresh token "
@@ -130,10 +131,9 @@ const logoutUser = asyncHandler(async (req, res) => {
 //refreshing access token
 const refreshAccessToken = asyncHandler(async (req, res) => {
   try {
-    const incomingRefreshToken =
-      req.cookies.refreshToken || req.body?.refreshToken;
+    const incomingRefreshToken =req.cookies.refreshToken || req.body?.refreshToken;
     if (!incomingRefreshToken) {
-      throw new ApiError(401, "unAuthorized acess");
+      throw new ApiError(401, "unAuthorized access");
     }
     const decodeToken = jwt.verify(
       incomingRefreshToken,
@@ -191,6 +191,8 @@ const changePassword = asyncHandler(async (req, res) => {
     .json(new ApiError(200, {}, "Password Changed Sucessfully"));
 });
 
+
+
 //to return the current user
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
@@ -225,7 +227,8 @@ const updateAccountDetails = asyncHandler(async (req, res) => {
 //to update avatar 
 
 const updateAvatar =  asyncHandler(async (req , res)=>{
-  const localFilePath = req.files?.path ; 
+  const localFilePath = req.file?.path ; 
+  console.log(req.file);
 
   if(!localFilePath) throw new ApiError(400 , "please upload a avatar") ; 
 
@@ -247,7 +250,7 @@ const updateAvatar =  asyncHandler(async (req , res)=>{
 
 //to update cover image .  
 const updateCoverImage =  asyncHandler(async (req , res)=>{
-  const localFilePath  = req.files?.path ;  
+  const localFilePath  = req.file?.path ;  
   if(!localFilePath) throw new ApiError(400 ,  "please upload new coverimage") ; 
 
   const coverImage = await uploadOnCloudinary(localFilePath) ; 
