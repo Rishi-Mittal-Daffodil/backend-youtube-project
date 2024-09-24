@@ -4,6 +4,7 @@ import {
   getCurrentUser,
   loginUser,
   logoutUser,
+  otpverification,
   refreshAccessToken,
   registerUser,
   updateAccountDetails,
@@ -30,13 +31,19 @@ router.post(
   registerUser
 );
 
+router.post('/login/verify-otp' , otpverification)
 router.post("/login", loginUser);
 router.post("/logout", verifyToken, logoutUser);
 router.post("/refresh-token", refreshAccessToken);
 router.post("/change-password", verifyToken, changePassword);
 router.get("/current-user", verifyToken, getCurrentUser);
 router.patch("/update-account", verifyToken, updateAccountDetails);
-router.patch("/avatar", verifyToken,  upload.single("avatar"), updateAvatar);
-router.patch("/cover-image", verifyToken ,  upload.single("coverImage"), updateCoverImage);
+router.patch("/avatar", verifyToken, upload.single("avatar"), updateAvatar);
+router.patch(
+  "/cover-image",
+  verifyToken,
+  upload.single("coverImage"),
+  updateCoverImage
+);
 
 export default router;

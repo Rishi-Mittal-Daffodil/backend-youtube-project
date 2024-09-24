@@ -53,14 +53,13 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.methods.isPasswordCorrect = async function(password){
-  console.log("ispaass"+this.password);
-  
+userSchema.methods.isPasswordCorrect = async function (password) {
+  console.log("ispaass" + this.password);
+
   return bcryptjs.compareSync(password, this.password);
 };
 
-userSchema.methods.generateAccessToken =  function () {
-  
+userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
